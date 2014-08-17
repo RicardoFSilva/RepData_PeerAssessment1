@@ -8,6 +8,8 @@
 #library(plyr)
 library(ggplot2)
 #library(lattice)
+library(knitr)
+library(markdown)
 ```
 
 
@@ -182,3 +184,4 @@ plot(x5[x5$weekdayf == "weekend", c("interval", "steps")], type="l", main="Weeke
 ```
 
 <img src="figure/unnamed-chunk-12.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" style="display: block; margin: auto;" />
+   
