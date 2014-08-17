@@ -147,3 +147,4 @@ par(mfrow=c(1, 2))
 plot(x5[x5$weekdayf == "weekday", c("interval", "steps")], type="l", main="Weekday")
 plot(x5[x5$weekdayf == "weekend", c("interval", "steps")], type="l", main="Weekend")
 ```
+   
