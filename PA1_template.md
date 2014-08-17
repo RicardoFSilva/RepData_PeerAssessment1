@@ -1,22 +1,21 @@
 # Reproducible Research
 #### Peer Assessment 1
 
-```{r message=FALSE, warning=FALSE}
+
+```r
 # Load some libraries
 #library(sqldf)
 #library(plyr)
 library(ggplot2)
 #library(lattice)
-library(knitr)
-library(markdown)
-
 ```
 
 
 ##1 - Loading and preprocessing the data
 
 ### 1.1 - Load the data
-```{r}
+
+```r
 # Extract the file activity.csv from the zip file, if it does not exist in the directory
 if(!file.exists("activity.csv"))
     unzip("activity.zip")
@@ -28,7 +27,8 @@ dtAll <- read.csv("activity.csv")
 
 ### 1.2 - Process and transform the data
 
-```{r}
+
+```r
 # Remove rows with NAs on the steps column
 dtNNA <- as.data.frame(dtAll[!is.na(dtAll$steps), ])
 ```
@@ -38,7 +38,8 @@ dtNNA <- as.data.frame(dtAll[!is.na(dtAll$steps), ])
 
 ### 2.1 - Total number of steps taken each day
 
-```{r fig.align='center'}
+
+```r
 # Aggregate by Date, using function sum to get the total number of steps, by day
 
 x2 <- aggregate(steps ~ date, data=dtAll, FUN=function(x) sum(x, na.rm=F))
@@ -48,40 +49,60 @@ barplot(x2$steps, plot=TRUE, main="Total number of steps taken each day", col="L
 box()
 ```
 
+<img src="figure/unnamed-chunk-4.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" style="display: block; margin: auto;" />
+
 ### 2.2 - Report with the mean and median total number of steps taken per day
-```{r warnnig=FALSE, message=FALSE}
+
+```r
 y2 <- data.frame(cbind(sprintf("%.2f", mean(x2$steps)), sprintf("%.2f", median(x2$steps))))
 names(y2) <- c("Mean", "Median")
 print(y2)
+```
+
+```
+##       Mean   Median
+## 1 10766.19 10765.00
 ```
 
 
 ## 3 - What is the average daily activity pattern?
 
 ### 3.1 - Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r fig.align='center'}
+
+```r
 x3 <- aggregate(steps ~ interval, data=dtAll, FUN=function(x) mean(x, na.rm=TRUE))
 plot(x3, type="l")
 ```
 
+<img src="figure/unnamed-chunk-6.png" title="plot of chunk unnamed-chunk-6" alt="plot of chunk unnamed-chunk-6" style="display: block; margin: auto;" />
+
 ### 3.2 - Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r results="asis"}
+
+```r
 y <- x3[x3$steps == max(x3$steps), ]
 sprintf("The 5-minute interval with the maximum number of steps is %.0f, with the value %.2f", y$interval, max(y$steps))
 ```
+
+[1] "The 5-minute interval with the maximum number of steps is 835, with the value 206.17"
 
 ## 4 - Imputing missing values
 
 ### 4.1 - Total number of missing values (NAs)
 
-```{r}
+
+```r
 sprintf("The total number of rows with NAs is: %.0f", sum(is.na(dtAll$steps)))
+```
+
+```
+## [1] "The total number of rows with NAs is: 2304"
 ```
 
 ### 4.2 - Filling missing values (NAs)
 
-```{r}
+
+```r
 # Use the dataset 'x3', produced in point 3.1 with the average for every 5-minute across all days, excluding NAs, to fill dtALL NAs rows with new values
 
 # Create a dataset with NAs rows only
@@ -105,7 +126,8 @@ This is the dataset **dtAllFill** created on point 4.2
 The code is similar to the one used on points 2.1 and 2.2
 
 
-```{r fig.align='center'}
+
+```r
 # Total number of steps taken each day
 # Aggregate by Date, using function sum to get the total number of steps, by day
 
@@ -114,11 +136,20 @@ x4 <- aggregate(steps ~ date, data=dtAllFill, FUN=sum)
 # Plot the total steps taken each day
 barplot(x4$steps, plot=TRUE, main="Total number of steps taken each day", col="LightBlue", xlab="Date", ylab="Steps", names.arg=x4$date, space=0)
 box()
+```
 
+<img src="figure/unnamed-chunk-10.png" title="plot of chunk unnamed-chunk-10" alt="plot of chunk unnamed-chunk-10" style="display: block; margin: auto;" />
+
+```r
 ### Report with the mean and median total number of steps taken per day
 y4 <- data.frame(cbind(sprintf("%.2f", mean(x4$steps)), sprintf("%.2f", median(x4$steps))))
 names(y4) <- c("Mean", "Median")
 print(y4)
+```
+
+```
+##       Mean   Median
+## 1 10766.19 10766.19
 ```
 
 There are 2304 rows with the column steps with NAs. Changing the value of this column has no impact on the mean and the median changes a litle bit.
@@ -127,7 +158,8 @@ There are 2304 rows with the column steps with NAs. Changing the value of this c
 
 ### 5.1 - Create a new factor variable for **weekday** and **weekend**
 
-```{r}
+
+```r
 # Using the dataset dtAllFill that contains all the rows created on point 4.2
 # Add the weekdayf factor column
 dtAllFill <- cbind(dtAllFill, weekday=weekdays(as.Date(dtAllFill$date), abbreviate=TRUE), weekdayf = c("weekday", "weekend"))
@@ -142,8 +174,11 @@ x5 <- aggregate(steps ~ weekdayf + interval, data=subset(dtAllFill, select=c(ste
 
 ### 5.2 - Plot the timeseries for weekday and weekend
 
-```{r fig.align='center'}
+
+```r
 par(mfrow=c(1, 2))
 plot(x5[x5$weekdayf == "weekday", c("interval", "steps")], type="l", main="Weekday")
 plot(x5[x5$weekdayf == "weekend", c("interval", "steps")], type="l", main="Weekend")
 ```
+
+<img src="figure/unnamed-chunk-12.png" title="plot of chunk unnamed-chunk-12" alt="plot of chunk unnamed-chunk-12" style="display: block; margin: auto;" />
